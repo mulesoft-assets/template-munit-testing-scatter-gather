@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:siebel="http://www.mulesoft.org/schema/mule/siebel" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
+xmlns:json="http://www.mulesoft.org/schema/mule/json" 
+xmlns="http://www.mulesoft.org/schema/mule/core" 
+xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+xmlns:spring="http://www.springframework.org/schema/beans" 
+version="EE-3.5.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/siebel http://www.mulesoft.org/schema/mule/siebel/current/mule-siebel.xsd
+http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
+    <sub-flow name="createAccountsInSalesforceFlow" doc:name="createAccountsInSalesforceFlow">
+        <sfdc:create config-ref="Salesforce" type="Account" doc:name="Salesforce">
+            <sfdc:objects ref="#[payload]"/>
+        </sfdc:create>
+    </sub-flow>
+    <flow name="createAccountsInSapFlow" doc:name="createAccountsInSapFlow">
+        <collection-splitter doc:name="Collection Splitter"/>
+        <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Upsert Material to SAP">
+            <sap:definition><![CDATA[<jco>
+  	<import>
+	  	<structure name="HEADDATA">
+	  		<field name="MATERIAL">#[payload['Id']]</field>
+	  		<field name="MATL_TYPE">${sap.material.type}</field>
+	  		<field name="IND_SECTOR">${sap.material.industrySector}</field>
+	  		<field name="BASIC_VIEW">X</field>
+	  	</structure>
+	  	<structure name="CLIENTDATA">
+	  		<field name="BASE_UOM">${sap.material.baseUnitOfMeasurement}</field>
+	  	</structure>
+	  	<structure name="CLIENTDATAX">
+	  		<field name="SIZE_DIM">X</field>
+	  		<field name="BASE_UOM">X</field>
+	  	</structure>
+	</import>
+  	<tables>
+	  	<table name="MATERIALDESCRIPTION">
+	  		<row id="0">
+	  			<field name="LANGU">E</field>
+  				<field name="LANGU_ISO">EN</field>
+  				<field name="MATL_DESC">#[payload['Name']]</field>
+  			</row>
+	  	</table>
+	</tables>
+</jco>
+]]></sap:definition>
+        </sap:outbound-endpoint>
+        <collection-aggregator failOnTimeout="true" doc:name="Collection Aggregator"/>
+    </flow>
+    <sub-flow name="deleteAccountsFromSalesforceFlow" doc:name="deleteAccountsFromSalesforceFlow">
+        <sfdc:delete config-ref="Salesforce" doc:name="Salesforce">
+            <sfdc:ids ref="#[payload]"/>
+        </sfdc:delete>
+    </sub-flow>
+    <sub-flow name="deleteAccountsFromSapFlow" doc:name="deleteAccountsFromSapFlow">
+        <foreach doc:name="For Each">
+            <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Delete Material from SAP">
+                <sap:definition><![CDATA[<jco>
+  	<import>
+	  	<structure name="HEADDATA">
+	  		<field name="MATERIAL">#[payload]</field>
+	  		<field name="BASIC_VIEW">X</field>
+	  	</structure>
+	  	<structure name="CLIENTDATA">
+	  		<field name="DEL_FLAG">X</field>
+	  	</structure>
+	  	<structure name="CLIENTDATAX">
+	  		<field name="DEL_FLAG">X</field>
+	  	</structure>
+	</import>
+</jco>
+]]></sap:definition>
+            </sap:outbound-endpoint>
+        </foreach>
+    </sub-flow>
+    
+
+</mule>

@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<configuration>
+	<placeholders>
+		<placeholder id="template_name">Salesforce to SAP Product Aggregation</placeholder>
+	</placeholders>
+	<sections>
+		<section id="use_case">
+			<![CDATA[
+I want to aggregate products from Salesforce to SAP and compare them to see which products can only be found in one of the two and which products are in both instances.
+
+For practical purposes this Template will generate the result in the format of a CSV Report sent by e-mail.
+
+This Template should serve as a foundation for extracting data from two systems, aggregating data, comparing values of fields for the objects, and generating a report on the differences.
+
+As implemented, it gets products from Salesforce and materials from SAP, compares by the name of the products, and generates a CSV file which shows product in Salesforce, product in SAP, and products in Salesforce and SAP. The report is then e-mailed to a configured group of e-mail addresses.
+]]>
+		</section>
+		<section id="considerations">
+			<![CDATA[
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly. **Failling to do so could lead to unexpected behavior of the template.**
+]]>
+		</section>
+		<section id="running_on_studio">
+<![CDATA[
+In order to make this Anypoint Template run on Mule Studio there are a few extra steps that needs to be made.
+Please check this Documentation Page:
+
++ [Enabling Your Studio Project for SAP](http://www.mulesoft.org/documentation/display/current/SAP+Connector#SAPConnector-EnablingYourStudioProjectforSAP)
+]]>
+		</section>
+		<section id="running_on_cloudhub">
+<![CDATA[
+Once your app is all set and started, supposing you choose as domain name `template-sfdc2sap-product-material-aggregation` to trigger the use case you just need to hit `http://template-sfdc2sap-product-material-aggregation.cloudhub.io/generatereport` and report will be sent to the e-mails configured.
+]]>
+		</section>
+		<section id="running_on_standalone">
+<![CDATA[
+After this, to trigger the use case you just need to hit the local HTTP endpoint with the port you configured in your file. If this is, for instance, `9090` then you should hit: `http://localhost:9090/generatereport` and this will create a CSV report and send it to the e-mails set.
+]]>
+		</section>
+		<section id="application_configuration">
+			<![CDATA[
++ http.port `9090` 
+
+### Salesforce `Connector configuration`
++ sfdc.username `bob.dylan@sfdc`
++ sfdc.password `DylanPassword123`
++ sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
++ sfdc.url `https://test.salesforce.com/services/Soap/u/28.0`
+
+### SAP Connector configuration
++ sap.jco.ashost `your.sap.address.com`
++ sap.jco.user `SAP_USER`
++ sap.jco.passwd `SAP_PASS`
++ sap.jco.sysnr `14`
++ sap.jco.client `800`
++ sap.jco.lang `EN`
+
+### SMPT Services configuration
++ smtp.host `smtp.gmail.com`
++ smtp.port `587`
++ smtp.user `exampleuser@gmail.com`
++ smtp.password `ExamplePassword456`
+
+### Mail details
++ mail.from `exampleuser@gmail.com`
++ mail.to `woody.guthrie@gmail.com`
++ mail.subject `SFDC Products Report`
++ mail.body `Report comparing Products from SFDC and SAP Materials`
++ attachment.name `OrderedReport.csv`
+]]>
+		</section>
+		<section id="api_calls">
+			<![CDATA[&#160;]]>
+		</section>
+		<section id="default_endpoints_xml">
+		<![CDATA[
+This is the file where you will found the inbound and outbound sides of your integration app.
+This Template has an [HTTP Inbound Endpoint](http://www.mulesoft.org/documentation/display/current/HTTP+Endpoint+Reference) as the way to trigger the use case and an [SMTP Transport](http://www.mulesoft.org/documentation/display/current/SMTP+Transport+Reference) as the outbound way to send the report.
+
+$H$H# Trigger Flow
+**HTTP Inbound Endpoint** - Start Report Generation
++ `${http.port}` is set as a property to be defined either on a property file or in CloudHub environment variables.
++ The path configured by default is `generatereport` and you are free to change for the one you prefer.
++ The host name for all endpoints in your CloudHub configuration should be defined as `localhost`. CloudHub will then route requests from your application domain URL to the endpoint.
+
+$H$H# Outbound Flow
+**SMTP Outbound Endpoint** - Send E-Mail
++ Both SMTP Server configuration and the actual e-mail to be sent are defined in this endpoint.
++ This flow is going to be invoked from the flow that does all the functional work: *mainFlow*, the same that is invoked from the Inbound Flow upon triggering of the HTTP Endpoint.
+]]>
+		</section>
+		<section id="default_business_logic_xml">
+		<![CDATA[
+Functional aspect of the Template is implemented on this XML, directed by one flow responsible of conducting the aggregation of data, comparing records and finally formating the output, in this case being a report.
+The *mainFlow* organises the job in three different steps and finally invokes the *outboundFlow* that will deliver the report to the corresponding outbound endpoint.
+This flow has Exception Strategy that basically consists on invoking the *defaultChoiseExceptionStrategy* defined in *errorHandling.xml* file.
+
+$H$H# Gather Data Flow
+Mainly consisting of two calls (Queries) to Salesforce and SAP and storing each response on the Invocation Variable named *productsFromSalesforce* or *productsFromSap* accordingly.
+
+$H$H# Aggregation Flow
+[Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for aggregating the results from the Salesforce and SAP Products.
+Criteria and format applied:
++ Transformer receives a Mule Message with the two Invocation variables *productsFromSalesforce* and *productsFromSap* to result in List of Maps with keys: **Name**, **IDInSalesforce** and **IDInSap**.
++ Products will be matched by name, that is to say, a record in both organisations with same name is considered the same product.
+
+$H$H# Format Output Flow
++ [Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for sorting the list of products in the following order:
+
+1. Products only in Salesforce
+2. Products only in SAP
+3. Products in both Salesforce and SAP
+
+All records ordered alphabetically by name within each category.
+If you want to change this order then the *compare* method should be modified.
+
++ CSV Report [DataMapper](http://www.mulesoft.org/documentation/display/current/Datamapper+User+Guide+and+Reference) transforming the List of Maps in CSV with headers **Name**, **IDInSalesforce** and **IDInSap**.
++ An [Object to string transformer](http://www.mulesoft.org/documentation/display/current/Transformers) is used to set the payload as an String. 
+]]>
+		</section>
+	</sections>
+</configuration>
