@@ -18,6 +18,9 @@
 	<properties>
 		<sfdc.version>5.4.7</sfdc.version>
 		<sap.transport.version>2.2.2</sap.transport.version>
+		<sap.jco.version>3.0.9</sap.jco.version>
+		<sap.idoc.version>3.0.6</sap.idoc.version>
+		<sap.build.type>linux64</sap.build.type>
 	</properties>
 
 	<build>
@@ -28,8 +31,62 @@
 				<configuration>
 					<copyToAppsDirectory>true</copyToAppsDirectory>
 					<inclusions>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-sfdc</artifactId>
+						</inclusion>
 					</inclusions>
 				</configuration>
+			</plugin>
+
+			<!-- SAP Build -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>com.sap.conn.jco</groupId>
+									<artifactId>sapjco-native</artifactId>
+									<version>${sap.jco.version}</version>
+									<classifier>${sap.build.type}</classifier>
+									<type>jar</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${project.build.directory}/temp-native-lib</outputDirectory>
+									<includes>**/*.dll,**/*.so,**/*.jnilib</includes>
+									<excludes>META-INF</excludes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>add-native-lib</id>
+						<phase>package</phase>
+						<configuration>
+							<tasks>
+								<zip destfile="${project.build.directory}/${project.build.finalName}.zip" update="true">
+									<zipfileset dir="${project.build.directory}/temp-native-lib" prefix="lib" />
+								</zip>
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
@@ -46,26 +103,31 @@
 			<artifactId>mule-transport-sap</artifactId>
 			<version>${sap.transport.version}</version>
 		</dependency>
+
+		<!-- SAP Dependencies -->
+		<dependency>
+			<groupId>com.sap.conn.jco</groupId>
+			<artifactId>sapjco</artifactId>
+			<version>${sap.jco.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.conn.jco</groupId>
+			<artifactId>sapjco-native</artifactId>
+			<version>${sap.jco.version}</version>
+			<classifier>${sap.build.type}</classifier>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.sap.conn.idoc</groupId>
+			<artifactId>sapidoc</artifactId>
+			<version>${sap.idoc.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.mulesoft.muleesb.modules</groupId>
 			<artifactId>mule-module-batch-ee</artifactId>
-			<version>${mule.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-spring-config</artifactId>
-			<version>${mule.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-objectstore</artifactId>
-			<version>1.3.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.mule.modules</groupId>
-			<artifactId>mule-module-xml</artifactId>
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
@@ -84,7 +146,13 @@
 			<url>https://repository.mulesoft.org/nexus/content/repositories/snapshots/</url>
 			<layout>default</layout>
 		</repository>
-	</repositories>	
+		<repository>
+			<id>mule-ee-dependencies</id>
+			<name>Mule EE Dependencies</name>
+			<url>http://repository-master.mulesoft.org/nexus/content/repositories/mule-ee-dependencies/</url>
+		</repository>
+	</repositories>
+	
 	<scm>
 		<connection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-aggregation.git</connection>
 		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-aggregation.git</developerConnection>
