@@ -36,7 +36,19 @@ As implemented, it gets products from Salesforce and materials from SAP, compare
 
 # Considerations <a name="considerations"/>
 
-To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly. **Failling to do so could lead to unexpected behavior of the template.**
+To make this Anypoint Template run, there are certain preconditions that must be considered. All of them deal with the preparations in both, that must be made in order for all to run smoothly.
+**Failling to do so could lead to unexpected behavior of the template.**
+
+Before continue with the use of this Anypoint Template, you may want to check out this [Documentation Page](http://www.mulesoft.org/documentation/display/current/SAP+Connector#SAPConnector-EnablingYourStudioProjectforSAP), that will teach you how to work 
+with SAP and Anypoint Studio.
+
+## Disclaimer
+
+This Anypoint template uses a few private Maven dependencies in oder to work. If you intend to run this template with Maven support, please continue reading.
+
+You will find that there are three dependencies in the pom.xml file that begin with the following group id: 
+	**com.sap.conn.jco** 
+These dependencies are private for Mulesoft and will cause you application not to build from a Maven command line. You need to replace them with "provided" scope and copy the libraries into the build path.
 
 
 ## SAP Considerations <a name="sapconsiderations"/>
