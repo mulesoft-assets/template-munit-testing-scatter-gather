@@ -15,11 +15,9 @@
 	<name>template-sfdc2sap-product-aggregation Anypoint Template Project</name>
 
 	<properties>
-		<sfdc.version>5.4.7</sfdc.version>
-		<sap.transport.version>2.2.2</sap.transport.version>
 		<sap.jco.version>3.0.9</sap.jco.version>
 		<sap.idoc.version>3.0.6</sap.idoc.version>
-		<sap.build.type>linux64</sap.build.type>
+		<sap.build.type>mac64</sap.build.type>
 	</properties>
 
 	<build>
@@ -100,7 +98,7 @@
 		<dependency>
 			<groupId>com.mulesoft.muleesb.transports</groupId>
 			<artifactId>mule-transport-sap</artifactId>
-			<version>${sap.transport.version}</version>
+			<version>${sap.version}</version>
 		</dependency>
 
 		
