@@ -42,7 +42,7 @@ Please check this Documentation Page:
 		</section>
 		<section id="running_on_cloudhub">
 <![CDATA[
-Once your app is all set and started, supposing you choose as domain name `template-sfdc2sap-product-material-aggregation` to trigger the use case you just need to hit `http://template-sfdc2sap-product-material-aggregation.cloudhub.io/generatereport` and report will be sent to the e-mails configured.
+Once your app is all set and started, supposing you choose as domain name `template-sfdc2sap-product-aggregation` to trigger the use case you just need to hit `http://template-sfdc2sap-product-aggregation.cloudhub.io/generatereport` and report will be sent to the e-mails configured.
 ]]>
 		</section>
 		<section id="running_on_standalone">
