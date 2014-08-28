@@ -11,7 +11,7 @@
 
 	<artifactId>template-sfdc2sap-product-aggregation</artifactId>
 	<packaging>mule</packaging>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>template-sfdc2sap-product-aggregation Anypoint Template Project</name>
 
 	<properties>
