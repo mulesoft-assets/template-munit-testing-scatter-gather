@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:siebel="http://www.mulesoft.org/schema/mule/siebel" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
-xmlns:json="http://www.mulesoft.org/schema/mule/json" 
-xmlns="http://www.mulesoft.org/schema/mule/core" 
-xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
-xmlns:spring="http://www.springframework.org/schema/beans" 
-version="EE-3.5.0" 
+<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" xmlns:siebel="http://www.mulesoft.org/schema/mule/siebel" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc"
+xmlns:json="http://www.mulesoft.org/schema/mule/json"
+xmlns="http://www.mulesoft.org/schema/mule/core"
+xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+xmlns:spring="http://www.springframework.org/schema/beans"
+version="EE-3.5.2"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
@@ -23,33 +23,34 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
     <flow name="createAccountsInSapFlow" doc:name="createAccountsInSapFlow">
         <collection-splitter doc:name="Collection Splitter"/>
         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Upsert Material to SAP">
-            <sap:definition><![CDATA[<jco>
+            <sap:definition><![CDATA[<BAPI_MATERIAL_SAVEDATA>
   	<import>
-	  	<structure name="HEADDATA">
-	  		<field name="MATERIAL">#[payload['Id']]</field>
-	  		<field name="MATL_TYPE">${sap.material.type}</field>
-	  		<field name="IND_SECTOR">${sap.material.industrySector}</field>
-	  		<field name="BASIC_VIEW">X</field>
-	  	</structure>
-	  	<structure name="CLIENTDATA">
-	  		<field name="BASE_UOM">${sap.material.baseUnitOfMeasurement}</field>
-	  	</structure>
-	  	<structure name="CLIENTDATAX">
-	  		<field name="SIZE_DIM">X</field>
-	  		<field name="BASE_UOM">X</field>
-	  	</structure>
+	  	<HEADDATA>
+	  		<MATERIAL>#[payload['Id']]</MATERIAL>
+	  		<MATL_TYPE>${sap.material.type}</MATL_TYPE>
+	  		<IND_SECTOR>${sap.material.industrySector}</IND_SECTOR>
+	  		<BASIC_VIEW>X</BASIC_VIEW>
+	  	</HEADDATA>
+	  	<CLIENTDATA>
+	  		<BASE_UOM>${sap.material.baseUnitOfMeasurement}</BASE_UOM>
+	  	</CLIENTDATA>
+	  	<CLIENTDATAX>
+	  		<SIZE_DIM>X</SIZE_DIM>
+	  		<BASE_UOM>X</BASE_UOM>
+	  	</CLIENTDATAX>
 	</import>
   	<tables>
-	  	<table name="MATERIALDESCRIPTION">
+	  	<MATERIALDESCRIPTION>
 	  		<row id="0">
-	  			<field name="LANGU">E</field>
-  				<field name="LANGU_ISO">EN</field>
-  				<field name="MATL_DESC">#[payload['Name']]</field>
+	  			<LANGU>E</LANGU>
+  				<LANGU_ISO>EN</LANGU_ISO>
+  				<MATL_DESC>#[payload['Name']]</MATL_DESC>
   			</row>
-	  	</table>
+	  	</MATERIALDESCRIPTION>
 	</tables>
-</jco>
+</BAPI_MATERIAL_SAVEDATA>
 ]]></sap:definition>
+
         </sap:outbound-endpoint>
         <collection-aggregator failOnTimeout="true" doc:name="Collection Aggregator"/>
     </flow>
@@ -61,21 +62,21 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
     <sub-flow name="deleteAccountsFromSapFlow" doc:name="deleteAccountsFromSapFlow">
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Delete Material from SAP">
-                <sap:definition><![CDATA[<jco>
+                <sap:definition><![CDATA[<BAPI_MATERIAL_SAVEDATA>
   	<import>
-	  	<structure name="HEADDATA">
-	  		<field name="MATERIAL">#[payload]</field>
-	  		<field name="BASIC_VIEW">X</field>
-	  	</structure>
-	  	<structure name="CLIENTDATA">
-	  		<field name="DEL_FLAG">X</field>
-	  	</structure>
-	  	<structure name="CLIENTDATAX">
-	  		<field name="DEL_FLAG">X</field>
-	  	</structure>
+	  	<HEADDATA>
+	  		<MATERIAL>#[payload]</MATERIAL>
+	  		<BASIC_VIEW>X</BASIC_VIEW>
+	  	</HEADDATA>
+	  	<CLIENTDATA>
+	  		<DEL_FLAG>X</DEL_FLAG>
+	  	</CLIENTDATA>
+	  	<CLIENTDATAX>
+	  		<DEL_FLAG>X</DEL_FLAG>
+	  	</CLIENTDATAX>
 	</import>
-</jco>
-]]></sap:definition>
+</BAPI_MATERIAL_SAVEDATA>]]></sap:definition>
+
             </sap:outbound-endpoint>
         </foreach>
     </sub-flow>
