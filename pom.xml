@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.mule.templates</groupId>
 		<artifactId>templates-tooling-parent-pom</artifactId>
-		<version>1.0.7</version>
+		<version>1.0.8</version>
 	</parent>
 
 	<artifactId>template-sfdc2sap-product-aggregation</artifactId>
@@ -16,7 +16,7 @@
 
 	<properties>
 		<sap.jco.version>3.0.9</sap.jco.version>
-		<sap.idoc.version>3.0.6</sap.idoc.version>
+		<sap.idoc.version>3.0.11</sap.idoc.version>
 		<sap.build.type>mac64</sap.build.type>
 	</properties>
 
