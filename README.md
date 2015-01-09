@@ -1,5 +1,5 @@
 
-# Anypoint Template: Salesforce to SAP Product Aggregation
+# Anypoint Template: Salesforce and SAP Product Aggregation
 
 + [License Agreement](#licenseagreement)
 + [Use Case](#usecase)
@@ -26,7 +26,7 @@ Note that using this template is subject to the conditions of this [License Agre
 Please review the terms of the license before downloading and using this template. In short, you are allowed to use the template for free with Mule ESB Enterprise Edition, CloudHub, or as a trial in Anypoint Studio.
 
 # Use Case <a name="usecase"/>
-I want to aggregate products from Salesforce to SAP and compare them to see which products can only be found in one of the two and which products are in both instances.
+I want to aggregate products from Salesforce and SAP and compare them to see which products can only be found in one of the two and which products are in both instances.
 
 For practical purposes this Template will generate the result in the format of a CSV Report sent by e-mail.
 
@@ -103,7 +103,7 @@ column='486'
 
 
 # Run it! <a name="runit"/>
-Simple steps to get Salesforce to SAP Product Aggregation running.
+Simple steps to get Salesforce and SAP Product Aggregation running.
 
 
 ## Running on premise <a name="runonopremise"/>

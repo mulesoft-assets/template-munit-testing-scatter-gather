@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <configuration>
 	<placeholders>
-		<placeholder id="template_name">Salesforce to SAP Product Aggregation</placeholder>
+		<placeholder id="template_name">Salesforce and SAP Product Aggregation</placeholder>
 	</placeholders>
 	<sections>
 		<section id="use_case">
 			<![CDATA[
-I want to aggregate products from Salesforce to SAP and compare them to see which products can only be found in one of the two and which products are in both instances.
+I want to aggregate products from Salesforce and SAP and compare them to see which products can only be found in one of the two and which products are in both instances.
 
 For practical purposes this Template will generate the result in the format of a CSV Report sent by e-mail.
 
