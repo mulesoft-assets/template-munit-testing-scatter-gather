@@ -42,7 +42,7 @@ The outbountFlow is in this file in order to maintain the logical abstraction of
         <set-attachment attachmentName="${attachment.name}" value="#[payload]" contentType="text/plain" doc:name="Attach report to Email" doc:description="Set CSV as attachment"/>
         <set-payload value="${mail.body}" doc:name="Set mail body"/>
         <smtp:outbound-endpoint host="${smtp.host}" port="${smtp.port}" user="${smtp.user}" password="${smtp.password}" to="${mail.to}" from="${mail.from}" subject="${mail.subject}" responseTimeout="10000" connector-ref="gmailConnector" doc:name="Send mail"/>
-        <remove-attachment attachmentName="${attachment.name}" doc:name="Attachment"/>
+        <remove-attachment attachmentName="${attachment.name}" doc:name="Remove attachment"/>
     </flow>
     
 </mule>
