@@ -3,6 +3,7 @@
  * Copyright (c) MuleSoft, Inc.
  * All rights reserved.  http://www.mulesoft.com
  */
+
 package org.mule.templates.transformers;
 
 import java.util.ArrayList;
@@ -10,32 +11,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mule.api.MuleMessage;
-import org.mule.api.transformer.TransformerException;
 import org.mule.templates.utils.VariableNames;
-import org.mule.templates.utils.Utils;
-import org.mule.transformer.AbstractMessageTransformer;
 
 /**
- * This transformer will take two lists as input and create a third one that
+ * This merge class will take two lists as input and create a third one that
  * will be the merge of the previous two. The identity of list's element is
  * defined by its Name.
  * 
  * @author damian.sima
- * @author martin
  */
-public final class ProductMergerTransformer extends AbstractMessageTransformer {
+public class ProductMerger {
 
 	private static final String EMPTY = "";
-
-	@Override
-	public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {
-		List<Map<String, String>> mergedAccountsList = mergeList(
-				Utils.buildList(message, VariableNames.PRODUCTS_FROM_SALESFORCE),
-				Utils.buildList(message, VariableNames.PRODUCTS_FROM_SAP));
-
-		return mergedAccountsList;
-	}
 
 	/**
 	 * The method will merge the products from the two lists creating a new one.
@@ -46,7 +33,7 @@ public final class ProductMergerTransformer extends AbstractMessageTransformer {
 	 *            products from SAP
 	 * @return a list with the merged content of the to input lists
 	 */
-	private static List<Map<String, String>> mergeList(List<Map<String, String>> productsFromSalesforce, List<Map<String, String>> productsFromSiebel) {
+	List<Map<String, String>> mergeList(List<Map<String, String>> productsFromSalesforce, List<Map<String, String>> productsFromSiebel) {
 		List<Map<String, String>> mergedProductList = new ArrayList<Map<String, String>>();
 
 		// Put all products from Salesforce in the merged contactList

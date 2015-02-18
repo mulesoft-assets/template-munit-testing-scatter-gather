@@ -216,10 +216,9 @@ This flow has Exception Strategy that basically consists on invoking the *defaul
 ### Gather Data Flow
 Mainly consisting of two calls (Queries) to Salesforce and SAP and storing each response on the Invocation Variable named *productsFromSalesforce* or *productsFromSap* accordingly.
 
-### Aggregation Flow
-[Java Transformer](http://www.mulesoft.org/documentation/display/current/Java+Transformer+Reference) responsible for aggregating the results from the Salesforce and SAP Products.
+[Scatter Gather](http://www.mulesoft.org/documentation/display/current/Scatter-Gather) is responsible for aggregating the results from the two collections of Opportunities.
 Criteria and format applied:
-+ Transformer receives a Mule Message with the two Invocation variables *productsFromSalesforce* and *productsFromSap* to result in List of Maps with keys: **Name**, **IDInSalesforce** and **IDInSap**.
++ Scatter Gather component implements an aggregation strategy that results in List of Maps with keys: **Name**, **IDInSalesforce** and **IDInSap**.
 + Products will be matched by name, that is to say, a record in both organisations with same name is considered the same product.
 
 ### Format Output Flow
