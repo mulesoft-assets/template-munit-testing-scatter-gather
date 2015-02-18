@@ -35,6 +35,9 @@ This flow should control the direction of the application, and it should be call
             <processor-chain>
                 <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="query all materials from SAP">
                     <sap:definition><![CDATA[<BAPI_MATERIAL_GETLIST>
+	<import>
+        <MAXROWS>${sap.maxrows}</MAXROWS>
+    </import>
   	<tables>
 		<MATERIALSHORTDESCSEL>
 			<row id="0">

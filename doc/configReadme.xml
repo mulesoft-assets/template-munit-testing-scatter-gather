@@ -53,7 +53,9 @@ After this, to trigger the use case you just need to hit the local HTTP endpoint
 		<section id="application_configuration">
 			<![CDATA[
 + http.port `9090` 
-
++ sap.maxrows `100`
++ page.size `100`
+ 
 ### Salesforce `Connector configuration`
 + sfdc.username `bob.dylan@sfdc`
 + sfdc.password `DylanPassword123`
