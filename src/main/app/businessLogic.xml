@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
-	xmlns:sap="http://www.mulesoft.org/schema/mule/sap" 
-	xmlns:siebel="http://www.mulesoft.org/schema/mule/siebel" 
-	xmlns:db="http://www.mulesoft.org/schema/mule/db" 
+	xmlns:sap="http://www.mulesoft.org/schema/mule/sap"
 xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
 xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
 xmlns="http://www.mulesoft.org/schema/mule/core" 

@@ -32,59 +32,28 @@
 							<groupId>org.mule.modules</groupId>
 							<artifactId>mule-module-sfdc</artifactId>
 						</inclusion>
+						<inclusion>
+							<groupId>com.mulesoft.muleesb.transports</groupId>
+							<artifactId>mule-transport-sap</artifactId>
+						</inclusion>
 					</inclusions>
 				</configuration>
 			</plugin>
-
-			
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>unpack</id>
-						<phase>prepare-package</phase>
-						<goals>
-							<goal>unpack</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>com.sap.conn.jco</groupId>
-									<artifactId>sapjco-native</artifactId>
-									<version>${sap.jco.version}</version>
-									<classifier>${sap.build.type}</classifier>
-									<type>jar</type>
-									<overWrite>true</overWrite>
-									<outputDirectory>${project.build.directory}/temp-native-lib</outputDirectory>
-									<includes>**/*.dll,**/*.so,**/*.jnilib</includes>
-									<excludes>META-INF</excludes>
-								</artifactItem>
-							</artifactItems>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antrun-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>add-native-lib</id>
-						<phase>package</phase>
-						<configuration>
-							<tasks>
-								<zip destfile="${project.build.directory}/${project.build.finalName}.zip" update="true">
-									<zipfileset dir="${project.build.directory}/temp-native-lib" prefix="lib"/>
-								</zip>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<argLine>-Djava.library.path=${project.basedir}/libraries/SAP.${sap.jco.version}</argLine>
+					<classpathDependencyExcludes>
+						<classpathDependencyExcludes>com.sap.conn.jco:sapjco</classpathDependencyExcludes>
+						<classpathDependencyExcludes>com.sap.conn.idoc:sapidoc</classpathDependencyExcludes>
+					</classpathDependencyExcludes>
+					<additionalClasspathElements>
+						<additionalClasspathElement>${project.basedir}/libraries/SAP.${sap.jco.version}/sapjco3.jar</additionalClasspathElement>
+						<additionalClasspathElement>${project.basedir}/libraries/SAP.${sap.idoc.version}/sapidoc3.jar</additionalClasspathElement>
+					</additionalClasspathElements>
+				</configuration>
+			</plugin>	
 		</plugins>
 	</build>
 
