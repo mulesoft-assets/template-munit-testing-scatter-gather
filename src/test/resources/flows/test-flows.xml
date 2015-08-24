@@ -5,7 +5,7 @@ xmlns:json="http://www.mulesoft.org/schema/mule/json"
 xmlns="http://www.mulesoft.org/schema/mule/core"
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 xmlns:spring="http://www.springframework.org/schema/beans"
-version="EE-3.6.0"
+version="EE-3.7.1"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
@@ -15,12 +15,12 @@ http://www.mulesoft.org/schema/mule/siebel http://www.mulesoft.org/schema/mule/s
 http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
-    <sub-flow name="createAccountsInSalesforceFlow" doc:name="createAccountsInSalesforceFlow">
+    <sub-flow name="createAccountsInSalesforceFlow" >
         <sfdc:create config-ref="Salesforce" type="Account" doc:name="Salesforce">
             <sfdc:objects ref="#[payload]"/>
         </sfdc:create>
     </sub-flow>
-    <flow name="createAccountsInSapFlow" doc:name="createAccountsInSapFlow">
+    <flow name="createAccountsInSapFlow" >
         <collection-splitter doc:name="Collection Splitter"/>
         <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" evaluateFunctionResponse="true" responseTimeout="10000" doc:name="Upsert Material to SAP">
             <sap:definition><![CDATA[<BAPI_MATERIAL_SAVEDATA>
@@ -54,12 +54,12 @@ http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/
         </sap:outbound-endpoint>
         <collection-aggregator failOnTimeout="true" doc:name="Collection Aggregator"/>
     </flow>
-    <sub-flow name="deleteAccountsFromSalesforceFlow" doc:name="deleteAccountsFromSalesforceFlow">
+    <sub-flow name="deleteAccountsFromSalesforceFlow" >
         <sfdc:delete config-ref="Salesforce" doc:name="Salesforce">
             <sfdc:ids ref="#[payload]"/>
         </sfdc:delete>
     </sub-flow>
-    <sub-flow name="deleteAccountsFromSapFlow" doc:name="deleteAccountsFromSapFlow">
+    <sub-flow name="deleteAccountsFromSapFlow" >
         <foreach doc:name="For Each">
             <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_SAVEDATA" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Delete Material from SAP">
                 <sap:definition><![CDATA[<BAPI_MATERIAL_SAVEDATA>

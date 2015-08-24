@@ -102,6 +102,10 @@ column='486'
 
 
 
+
+
+
+
 # Run it! <a name="runit"/>
 Simple steps to get Salesforce and SAP Product Aggregation running.
 
@@ -164,7 +168,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sfdc.username `bob.dylan@sfdc`
 + sfdc.password `DylanPassword123`
 + sfdc.securityToken `avsfwCUl7apQs56Xq2AKi3X`
-+ sfdc.url `https://test.salesforce.com/services/Soap/u/28.0`
++ sfdc.url `https://test.salesforce.com/services/Soap/u/32.0`
 
 ### SAP Connector configuration
 + sap.jco.ashost `your.sap.address.com`
@@ -233,7 +237,7 @@ Criteria and format applied:
 All records ordered alphabetically by name within each category.
 If you want to change this order then the *compare* method should be modified.
 
-+ CSV Report [DataMapper](http://www.mulesoft.org/documentation/display/current/Datamapper+User+Guide+and+Reference) transforming the List of Maps in CSV with headers **Name**, **IDInSalesforce** and **IDInSap**.
++ CSV Report [DataWeaver](https://developer.mulesoft.com/docs/dataweave) transforming the List of Maps in CSV with headers **Name**, **IDInSalesforce** and **IDInSap**.
 + An [Object to string transformer](http://www.mulesoft.org/documentation/display/current/Transformers) is used to set the payload as an String.
 
 

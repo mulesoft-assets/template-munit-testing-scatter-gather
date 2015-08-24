@@ -1,39 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:sap="http://www.mulesoft.org/schema/mule/sap" xmlns:siebel="http://www.mulesoft.org/schema/mule/siebel" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:data-mapper="http://www.mulesoft.org/schema/mule/ee/data-mapper" 
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:sap="http://www.mulesoft.org/schema/mule/sap" 
+	xmlns:siebel="http://www.mulesoft.org/schema/mule/siebel" 
+	xmlns:db="http://www.mulesoft.org/schema/mule/db" 
 xmlns:sfdc="http://www.mulesoft.org/schema/mule/sfdc" 
 xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" 
 xmlns="http://www.mulesoft.org/schema/mule/core" 
 xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
 xmlns:spring="http://www.springframework.org/schema/beans" 
-version="EE-3.6.0" 
+version="EE-3.7.1" 
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
 http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd
-http://www.mulesoft.org/schema/mule/ee/data-mapper http://www.mulesoft.org/schema/mule/ee/data-mapper/current/mule-data-mapper.xsd
 http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd">
 
-    <data-mapper:config name="map_to_csv" transformationGraphPath="map_to_csv.grf" doc:name="map_to_csv"/>
-    <data-mapper:config name="BAPI_MATERIAL_GETLIST_to_Products" transformationGraphPath="bapi_material_getlist_to_products.grf" doc:name="BAPI_MATERIAL_GETLIST_to_Products"/>
 
         <flow name="mainFlow"  doc:description="This flow is the entry point to the Template business logic.
 
 This flow should control the direction of the application, and it should be called by the different endpoints that your Template exposes to trigger it.">
-        <flow-ref name="gatherDataFlow" doc:name="call gatherDataFlow"/>
+        <flow-ref name="gatherDataFlow" doc:name="Call gatherDataFlow"/>
  
-        <flow-ref name="formatOutputFlow" doc:name="call formatOutputFlow"/>
-        <flow-ref name="outboundFlow" doc:name="call outboundFlow"/>
+        <flow-ref name="formatOutputFlow" doc:name="Call formatOutputFlow"/>
+        <flow-ref name="outboundFlow" doc:name="Call outboundFlow"/>
         <exception-strategy ref="defaultChoiceExceptionStrategy" doc:name="Reference Exception Strategy"/>
     </flow>
   
-    <sub-flow name="gatherDataFlow" >
+    <flow name="gatherDataFlow" >
         <scatter-gather doc:name="Scatter-Gather">
             <custom-aggregation-strategy class="org.mule.templates.transformers.ProductMergeAggregationStrategy"/>
-            <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id,Name FROM Product2" doc:name="query all products from SalesForce"/>
+            <sfdc:query config-ref="Salesforce" query="dsql:SELECT Id,Name FROM Product2" doc:name="Query all products from SalesForce"/>
             <processor-chain>
-                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="query all materials from SAP">
+                <sap:outbound-endpoint exchange-pattern="request-response" connector-ref="SAP" type="function" functionName="BAPI_MATERIAL_GETLIST" xmlVersion="2" outputXml="true" responseTimeout="10000" doc:name="Query all materials from SAP">
                     <sap:definition><![CDATA[<BAPI_MATERIAL_GETLIST>
 	<import>
         <MAXROWS>${sap.maxrows}</MAXROWS>
@@ -57,16 +58,31 @@ This flow should control the direction of the application, and it should be call
 </BAPI_MATERIAL_GETLIST>
 ]]></sap:definition>
                 </sap:outbound-endpoint>
-                <data-mapper:transform config-ref="BAPI_MATERIAL_GETLIST_to_Products" doc:name="BAPI_MATERIAL_GETLIST to Products"/>
+                <dw:transform-message doc:name="Transform BAPI_MATERIAL_GETLIST to Products">
+                    <dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload."BAPI_MATERIAL_GETLIST".tables.MATNRLIST.*row map {
+	Name: $.MATL_DESC,
+	Id: $.MATERIAL
+}]]></dw:set-payload>
+                </dw:transform-message>
+
             </processor-chain>
         </scatter-gather>
 
-    </sub-flow>
+    </flow>
 
     
-    <sub-flow name="formatOutputFlow" >
+    <flow name="formatOutputFlow" >
         <custom-transformer class="org.mule.templates.transformers.SortProductList" doc:name="Custom component to sort products list"/>
-        <data-mapper:transform config-ref="map_to_csv" doc:name="transform Collection of Maps to CSV Format"/>
+        <dw:transform-message doc:name="Transform Collection of Maps to CSV Format">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/csv header=true
+---
+payload]]></dw:set-payload>
+        </dw:transform-message>
+
         <object-to-string-transformer doc:name="CSV Output Object to String"/>
-    </sub-flow>
+    </flow>
 </mule>

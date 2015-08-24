@@ -22,6 +22,7 @@ import org.mule.processor.chain.SubflowInterceptingChainLifecycleWrapper;
 import org.mule.templates.utils.VariableNames;
 import org.mule.util.UUID;
 
+import com.google.common.collect.Lists;
 import com.sforce.soap.partner.SaveResult;
 
 /**
@@ -76,14 +77,7 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		sapAccount.put(VariableNames.ID, "s2s-prod-agg-" + Long.toString(System.currentTimeMillis(), Character.MAX_RADIX));
 		createdAccountsInSap.add(sapAccount);
 
-		MuleEvent event1 = runFlow("createAccountsInSapFlow", createdAccountsInSap);
-		
-//		List<?> results1 = (List<?>) event1.getMessage().getPayload();
-//		
-//		// assign Sap-generated IDs
-//		for (int i = 0; i < createdAccountsInSap.size(); i++) {
-//			createdAccountsInSap.get(i).put(VariableNames.ID, ((CreateResult) results1.get(i)).getCreatedObjects().get(0));
-//		}
+		runFlow("createAccountsInSapFlow", createdAccountsInSap);
 	}
 
 	protected void deleteTestAccountFromSandBox(List<Map<String, Object>> createdAccounts, String deleteFlow) throws Exception {
@@ -97,16 +91,13 @@ public class BusinessLogicIT extends AbstractTemplateTestCase {
 		flow.process(getTestEvent(idList, MessageExchangePattern.REQUEST_RESPONSE));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Test
 	public void testGatherDataFlow() throws Exception {
-		SubflowInterceptingChainLifecycleWrapper flow = getSubFlow("gatherDataFlow");
-		flow.setMuleContext(muleContext);
-		flow.initialise();
-		flow.start();
-		MuleEvent event = flow.process(getTestEvent("", MessageExchangePattern.REQUEST_RESPONSE));
-		Iterator<Map<String, String>> mergedList = (Iterator<Map<String, String>>)event.getMessage().getPayload();
+		MuleEvent event = runFlow("gatherDataFlow");
+		List<Map<String, String>> mergedList = Lists.newArrayList((Iterator<Map<String, String>>)event.getMessage().getPayload());
 		
-		Assert.assertTrue("There should be products from source A or source B.", mergedList.hasNext());
+		Assert.assertTrue("There should be products from source A or source B.", mergedList.size() > 0);
 	}
 
 }
