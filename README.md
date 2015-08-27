@@ -178,7 +178,7 @@ In order to use this Mule Anypoint Template you need to configure properties (Cr
 + sap.jco.client `800`
 + sap.jco.lang `EN`
 
-### SMPT Services configuration
+### SMTP Services configuration
 + smtp.host `smtp.gmail.com`
 + smtp.port `587`
 + smtp.user `exampleuser@gmail.com`

@@ -13,8 +13,8 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 http://www.mulesoft.org/schema/mule/sap http://www.mulesoft.org/schema/mule/sap/current/mule-sap.xsd
 http://www.mulesoft.org/schema/mule/sfdc http://www.mulesoft.org/schema/mule/sfdc/current/mule-sfdc.xsd">
 
-	<!-- This is the main configuration files, you should place here all the Connectors configuration an declarations -->
-
+	<!-- This is the main configuration files, you should place here all the Connectors configuration and declarations -->
+	
 	<context:property-placeholder
 		location="common.properties, mule.${mule.env}.properties" />
 	
