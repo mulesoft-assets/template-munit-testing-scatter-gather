@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans"
+	xmlns:scripting="http://www.mulesoft.org/schema/mule/scripting"
+	xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:core="http://www.mulesoft.org/schema/mule/core"
+	xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/scripting http://www.mulesoft.org/schema/mule/scripting/current/mule-scripting.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd">
+	<munit:config name="munit" doc:name="MUnit configuration" />
+	<spring:beans>
+		<spring:import resource="classpath:businessLogic.xml" />
+		<spring:import resource="classpath:config.xml" />
+		<spring:import resource="classpath:endpoints.xml" />
+		<spring:import resource="classpath:errorHandling.xml" />
+	</spring:beans>
+	<scripting:script name="groovyScriptSfdcPayloadGenerator"
+		engine="Groovy" doc:name="Script"><![CDATA[List list = new ArrayList();
+
+Map item1 = new HashMap();
+item1.put("Id", "123456");
+item1.put("Name", "Name1");
+
+Map item2 = new HashMap();
+item2.put("Id", "1234567");
+item2.put("Name", "Name2");
+
+Map item3 = new HashMap();
+item3.put("Id", "12345678");
+item3.put("Name", "Name3");
+
+list.add(item1);
+list.add(item2);
+list.add(item3);
+  
+return list;]]></scripting:script>
+	<scripting:script name="groovyScriptSapPayloadGenerator"
+		engine="Groovy" doc:name="Script"><![CDATA[def xmlFile = "./src/test/resources/BAPI_MATERIAL_GETLIST_OUTPUT.xml";
+def xml = new XmlParser().parse(xmlFile);
+StringWriter sw = new StringWriter();
+def np = new XmlNodePrinter(new PrintWriter(sw));
+np.setPreserveWhitespace(true);
+np.print(xml);
+sw.toString();
+]]></scripting:script>
+	<munit:test name="businessLogic-suite-gatherDataFlowTest"
+		description="Test">
+		<mock:when messageProcessor=".*:.*" doc:name="Mock Salesforce call">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Query all products from SalesForce']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[resultOfScript('groovyScriptSfdcPayloadGenerator')]">
+                <mock:invocation-properties>
+                    <mock:invocation-property key="Id" value="#['123456']"/>
+                    <mock:invocation-property key="Name" value="#['SALESFORCE_NAME']"/>
+                </mock:invocation-properties>
+            </mock:then-return>
+		</mock:when>
+		<mock:when messageProcessor=".*:.*" doc:name="Mock SAP call">
+            <mock:with-attributes>
+                <mock:with-attribute name="doc:name" whereValue="#['Query all materials from SAP']"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[resultOfScript('groovyScriptSapPayloadGenerator')]"/>
+		</mock:when>
+		<flow-ref name="gatherDataFlow" doc:name="gatherDataFlow" />
+		<dw:transform-message doc:name="prepare messages for assertion">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+payload map $]]></dw:set-payload>
+			<dw:set-variable variableName="expectedPayload"><![CDATA[%dw 1.0
+%output application/java
+---
+[
+{IDInSalesforce:"123456", Name:"Name1", IDInSap:""},
+{IDInSalesforce:"1234567", Name:"Name2", IDInSap:""},
+{IDInSalesforce:"12345678", Name:"Name3", IDInSap:"ASJDH12333"},
+{IDInSalesforce:"", Name:"Name4", IDInSap:"ASJDH12334"},
+{IDInSalesforce:"", Name:"Name5", IDInSap:"ASJDH12335"}
+]
+
+]]></dw:set-variable>
+		</dw:transform-message>
+		<munit:assert-on-equals expectedValue="#[flowVars.expectedPayload]"
+			actualValue="#[payload]" doc:name="Assert Equals" />
+	</munit:test>
+	<munit:test name="businessLogic-suite-formatOutputFlowTest"
+		description="Test">
+		<dw:transform-message doc:name="prepare input payload">
+			<dw:set-payload><![CDATA[%dw 1.0
+%output application/java
+---
+[
+{
+	IDInSalesforce : "123456",
+	Name : "Name1",
+	IDInSap: ""
+},
+{
+	IDInSalesforce : "1234567",
+	Name : "Name2",
+	IDInSap: ""
+},
+{
+	IDInSalesforce : "12345678",
+	Name : "Name3",
+	IDInSap : "ASJDH12333"
+},
+{	IDInSalesforce : "",
+	Name : "Name4",
+	IDInSap : "ASJDH12334"
+},
+{	IDInSalesforce : "",
+	Name : "Name5",
+	IDInSap : "ASJDH12335"
+}
+]]]></dw:set-payload>
+			<dw:set-variable variableName="expectedPayload"><![CDATA[%dw 1.0
+%output application/csv
+---
+[
+{Name:"Name1", IDInSalesforce:"123456", IDInSap:""},
+{Name:"Name2", IDInSalesforce:"1234567", IDInSap:""},
+{Name:"Name4", IDInSalesforce:"", IDInSap:"ASJDH12334"},
+{Name:"Name5", IDInSalesforce:"", IDInSap:"ASJDH12335"},
+{Name:"Name3", IDInSalesforce:"12345678", IDInSap:"ASJDH12333"}
+]
+]]></dw:set-variable>
+		</dw:transform-message>
+		<flow-ref name="formatOutputFlow" doc:name="Flow-ref to formatOutputFlow" />
+        <object-to-string-transformer doc:name="Object to String"/>
+        <munit:assert-on-equals expectedValue="#[flowVars.expectedPayload]" actualValue="#[payload]" doc:name="Assert Equals"/>
+	</munit:test>
+</mule>

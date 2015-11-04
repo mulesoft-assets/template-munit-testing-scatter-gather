@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>org.mule.templates</groupId>
 		<artifactId>templates-tooling-parent-pom</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.4</version>
 	</parent>
 
 	<artifactId>template-sfdc2sap-product-aggregation</artifactId>
@@ -14,11 +15,13 @@
 	<version>1.2.1-SNAPSHOT</version>
 	<name>template-sfdc2sap-product-aggregation Anypoint Template Project</name>
 
-	
+
 	<properties>
 		<sap.jco.version>3.0.13</sap.jco.version>
 		<sap.idoc.version>3.0.12</sap.idoc.version>
-    </properties>
+		<munit.version>1.0.0</munit.version>
+		<mule.munit.support.version>3.7.0</mule.munit.support.version>
+	</properties>
 
 	<build>
 		<plugins>
@@ -35,6 +38,14 @@
 						<inclusion>
 							<groupId>com.mulesoft.muleesb.transports</groupId>
 							<artifactId>mule-transport-sap</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-extensions-support</artifactId>
+						</inclusion>
+						<inclusion>
+							<groupId>org.mule.modules</groupId>
+							<artifactId>mule-module-extensions-spring-support</artifactId>
 						</inclusion>
 					</inclusions>
 				</configuration>
@@ -53,9 +64,31 @@
 						<additionalClasspathElement>${project.basedir}/libraries/SAP.${sap.idoc.version}/sapidoc3.jar</additionalClasspathElement>
 					</additionalClasspathElements>
 				</configuration>
-			</plugin>		
-        </plugins>
-    </build>
+			</plugin>
+			<plugin>
+				<groupId>com.mulesoft.munit.tools</groupId>
+				<artifactId>munit-maven-plugin</artifactId>
+				<version>${munit.version}</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<testResources>
+			<testResource>
+				<directory>src/test/munit</directory>
+			</testResource>
+			<testResource>
+				<directory>src/test/resources</directory>
+			</testResource>
+		</testResources>
+	</build>
 
 	<dependencies>
 
@@ -114,6 +147,28 @@
 			<version>${mule.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>mule-munit-support</artifactId>
+			<version>${mule.munit.support.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.mulesoft.munit</groupId>
+			<artifactId>munit-runner</artifactId>
+			<version>${munit.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-extensions-support</artifactId>
+			<version>${mule.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mule.modules</groupId>
+			<artifactId>mule-module-extensions-spring-support</artifactId>
+			<version>${mule.version}</version>
+		</dependency>
 	</dependencies>
 
 	<repositories>
@@ -136,11 +191,11 @@
 			<layout>default</layout>
 		</repository>
 	</repositories>
-	
+
 	<scm>
 		<connection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-aggregation.git</connection>
 		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-aggregation.git</developerConnection>
 		<url>http://github.com/mulesoft/template-sfdc2sap-product-aggregation</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
 </project>

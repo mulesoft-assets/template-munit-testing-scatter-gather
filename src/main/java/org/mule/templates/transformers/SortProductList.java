@@ -14,6 +14,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.mule.api.MuleMessage;
 import org.mule.api.transformer.TransformerException;
+import org.mule.templates.utils.Utils;
 import org.mule.templates.utils.VariableNames;
 import org.mule.transformer.AbstractMessageTransformer;
 
@@ -62,7 +63,7 @@ public final class SortProductList extends AbstractMessageTransformer {
 	@Override
 	public Object transformMessage(MuleMessage message, String outputEncoding) throws TransformerException {
 
-		List<Map<String, String>> sortedUsersList = Lists.newArrayList((Iterator<Map<String, String>>) message.getPayload());
+		List<Map<String, String>> sortedUsersList = Utils.buildList(message.getPayload());
 
 		Collections.sort(sortedUsersList, PRODUCT_MAP_COMPARATOR);
 

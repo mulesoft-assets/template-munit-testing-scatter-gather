@@ -1,0 +1,18 @@
+<BAPI_MATERIAL_GETLIST>
+	<tables>
+		<MATNRLIST>
+			<row>
+				<MATERIAL>ASJDH12333</MATERIAL>
+				<MATL_DESC>Name3</MATL_DESC>
+			</row>
+			<row>
+				<MATERIAL>ASJDH12334</MATERIAL>
+				<MATL_DESC>Name4</MATL_DESC>
+			</row>
+			<row>
+				<MATERIAL>ASJDH12335</MATERIAL>
+				<MATL_DESC>Name5</MATL_DESC>
+			</row>
+		</MATNRLIST>
+	</tables>
+</BAPI_MATERIAL_GETLIST>
