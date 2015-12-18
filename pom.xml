@@ -10,10 +10,10 @@
 		<version>1.2.7</version>
 	</parent>
 
-	<artifactId>template-sfdc2sap-product-aggregation</artifactId>
+	<artifactId>template-munit-testing-scatter-gather</artifactId>
 	<packaging>mule</packaging>
-	<version>1.2.1-SNAPSHOT</version>
-	<name>template-sfdc2sap-product-aggregation Anypoint Template Project</name>
+	<version>1.2.0-SNAPSHOT</version>
+	<name>template-munit-testing-scatter-gather Anypoint Template Project</name>
 
 
 	<properties>
@@ -193,9 +193,9 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-aggregation.git</connection>
-		<developerConnection>scm:git:https://github.com/mulesoft/template-sfdc2sap-product-aggregation.git</developerConnection>
-		<url>http://github.com/mulesoft/template-sfdc2sap-product-aggregation</url>
+		<connection>scm:git:https://github.com/mulesoft/template-munit-testing-scatter-gather.git</connection>
+		<developerConnection>scm:git:https://github.com/mulesoft/template-munit-testing-scatter-gather.git</developerConnection>
+		<url>http://github.com/mulesoft/template-munit-testing-scatter-gather</url>
 		<tag>HEAD</tag>
 	</scm>
 </project>
