@@ -5,12 +5,12 @@ This application illustrates how to using mocks to test the Scatter Gather throu
 
 ### Assumptions ###
 
-This document assumes that you are familiar with Mule and the [Anypoint™ Studio interface](http://www.mulesoft.org/documentation/display/current/Anypoint+Studio+Essentials). To increase your familiarity with Studio, consider completing one or more [Anypoint Studio Tutorials](http://www.mulesoft.org/documentation/display/current/Basic+Studio+Tutorial). Further, this example assumes that you have a basic understanding of [Mule flows](http://www.mulesoft.org/documentation/display/current/Mule+Application+Architecture), [Mule Global Elements](http://www.mulesoft.org/documentation/display/current/Global+Elements), Scatter Gather component [Scatter Gather](http://www.mulesoft.org/documentation/display/current/scatter-gather) and the [MUnit](https://docs.mulesoft.com/mule-user-guide/v/3.7/munit).
-This document describes the details of the example within the context of Anypoint Studio, Mule ESB’s graphical user interface.
+This document assumes that you are familiar with Mule and the [Anypointâ„¢ Studio interface](http://www.mulesoft.org/documentation/display/current/Anypoint+Studio+Essentials). To increase your familiarity with Studio, consider completing one or more [Anypoint Studio Tutorials](http://www.mulesoft.org/documentation/display/current/Basic+Studio+Tutorial). Further, this example assumes that you have a basic understanding of [Mule flows](http://www.mulesoft.org/documentation/display/current/Mule+Application+Architecture), [Mule Global Elements](http://www.mulesoft.org/documentation/display/current/Global+Elements), Scatter Gather component [Scatter Gather](http://www.mulesoft.org/documentation/display/current/scatter-gather) and the [MUnit](https://docs.mulesoft.com/mule-user-guide/v/3.7/munit).
+This document describes the details of the example within the context of Anypoint Studio, Mule ESBâ€™s graphical user interface.
 
 ### Use Case ###
 
-This application aggregates users from a Salesforce Instance and SAP, compares the records to avoid duplication and then tranfers it to a CSV file which is then sent as an attachment via email. This application also shows you how to use MUnit to test the solution using mocks.
+This application aggregates Products from a Salesforce Instance and Materials from SAP, compares the records to avoid duplication and then tranfers it to a CSV file which is then sent as an attachment via email. This application also shows you how to use MUnit to test the solution using mocks.
 
 # Considerations
 
