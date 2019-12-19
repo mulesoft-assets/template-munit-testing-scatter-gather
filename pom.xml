@@ -19,7 +19,7 @@
 		<sap.jco.version>3.0.13</sap.jco.version>
 		<sap.idoc.version>3.0.12</sap.idoc.version>
 		<munit.version>1.0.0</munit.version>
-		<mule.munit.support.version>3.7.0</mule.munit.support.version>
+		<mule.munit.support.version>3.9.2</mule.munit.support.version>
 	</properties>
 
 	<build>
